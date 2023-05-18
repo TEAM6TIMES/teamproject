@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>개인 페이지</title>
+    <link rel="stylesheet" type="text/css" href='styles.css'>
+    <!-- "{{ url_for('static', filename='styles.css') }}"> -->
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery 라이브러리 추가 -->
+
+    <script>
+        $(document).ready(function () {
+            set_temp();
+            show_comment();
+        });
+
+        function set_temp() {
+            fetch("http://spartacodingclub.shop/sparta_api/weather/seoul")
+                .then((res) => res.json())
+                .then((data) => {
+                    console.log(data);
+                });
+        }
+
+        function save_comment() {
+            let name = $('#name').val();
+            let comment = $('#comment').val();
+            let password = $('#password').val();
+            if (name == "") {
+                alert("닉네임을 입력하세요.");
+            } else {
+                var currentDate = new Date().toLocaleDateString('ko-KR');
+                var currentTime = new Date().toLocaleTimeString('ko-KR', {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    hour12: true,
+                    hourCycle: 'h23'
+                });
+
+                let formData = new FormData();
+                formData.append("name_give", name);
+                formData.append("comment_give", comment);
+                formData.append("password_give", password);
+                formData.append("currentDate_give", currentDate);
+                formData.append("currentTime_give", currentTime);
+
+                fetch('/guestbook', { method: "POST", body: formData }).then((res) => res.json()).then((data) => {
+                    alert(data["msg"]);
+                    window.location.reload();
+                });
+            }
+        }
+
+
+        function delete_comment(a) {
+            let comment = a
+
+            console.log(check_password);
+
+            $.ajax({
+                type: 'DELETE',
+                url: '/guestbook',
+                data: {
+                    comment_give: comment
+                },
+                success: function (response) {
+                    alert(response['msg']);
+                    window.location.reload();
+                }
+            });
+        }
+
+
+
+
+
+
+        function show_comment() {
+            fetch('/guestbook')
+                .then((res) => res.json())
+                .then((data) => {
+                    let rows = data['result'];
+                    $('#comment-list').empty();
+                    let currentDate2 = '';
+                    let currentDate1 = null; // 초기값 설정
+
+                    rows.forEach((a) => {
+                        let name = a['name'];
+                        let comment = a['comment'];
+                        let currentDate1 = a['currentDate'];
+                        let currentTime = a['currentTime'];
+                        let temp_html = '';
+
+                        if (currentDate1 && currentDate1 !== currentDate2) {
+                            temp_html += `<div class="Date">---------------------<${currentDate1}>---------------------</div>`;
+                        }
+
+                        temp_html += `<div class="message sent" onmouseover="showOverlay(this)" onmouseout="hideOverlay(this)">
+                                        <div class="sender">${name}</div>
+                                        <div class="content">${comment}</div>
+                                        <span class="timestamp">${currentTime}</span>
+                                        <div class="overlay" onclick="closeModal(this)">
+                                            <input type="text" class="input-password" id="check_password" placeholder="비밀번호">
+                                            <button class="delete-button" type="button" onclick="delete_comment('${comment}')">삭제</button>
+                                        </div>
+                                    </div>`;
+
+                        currentDate2 = currentDate1;
+                        $('#comment-list').append(temp_html);
+                        // 스크롤을 최신 메시지로 이동
+                        let chatContainer = document.getElementById('comment-list');
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    });
+                });
+        }
+
+    </script>
+    <style>
+        @font-face {
+            font-family: 'DungGeunMo';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            background-image: linear-gradient(0deg,
+                    rgba(0, 0, 0, 0.5),
+                    rgba(0, 0, 0, 0.5)),
+                url("https://mir-s3-cdn-cf.behance.net/project_modules/fs/01073865290819.5d61d475f0072.jpg");
+            background-size: values cover;
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-flow: row;
+            justify-content: center;
+            align-items: center;
+            font-family: 'DungGeunMo';
+        }
+
+        .cover {
+            background-color: rgba(131, 234, 247, 0.902);
+            padding: 20px 20px;
+            margin-top: 10%;
+            margin-bottom: 10%;
+            border-radius: 25px;
+            border: 2.5px solid #F1F1FF;
+            box-shadow: 5px 5px 5px 1px gray;
+        }
+
+        .input-container {
+            margin-bottom: 2%;
+        }
+
+        .input-nickname {
+            width: 80px;
+            margin-left: 10px;
+        }
+
+        .input-password {
+            width: 80px;
+        }
+
+        .input-message {
+            width: 340px;
+        }
+
+        .chat-container {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            max-width: 600px;
+            margin: 10px auto;
+            overflow-y: auto;
+            /* 수직 스크롤바 표시 */
+            height: 300px;
+            /* 최대 높이 설정 */
+        }
+
+        .overlay {
+            float: right;
+        }
+
+
+        /* 스크롤바 스타일 */
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background-color: #fff;
+        }
+
+        .message .sender {
+            font-size: 12px;
+            font-weight: 20;
+            margin-bottom: 2px;
+        }
+
+        .message .content {
+            font-size: 14px;
+        }
+
+        .message.sent .content {
+            background-color: #DCF8C6;
+            border-radius: 12px;
+            padding: 8px;
+            display: inline-block;
+        }
+
+
+        /* .message.sent .delete-button{
+    float: right;
+  } */
+        .message.sent .sender .timestamp {
+            padding: 4px
+        }
+
+        .timestamp {
+            font-size: 4px;
+        }
+
+        .container {
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: center;
+            width: 1000px;
+            height: 650px;
+            border: 2px dashed #f1f1ff;
+            border-radius: 16px;
+        }
+
+        .profile {
+            flex: 0.4;
+            margin-top: 10px;
+            margin-left: 10px;
+            margin-bottom: 10px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            display: flex;
+            flex-flow: column nowrap;
+            border-right: 1px dashed rgb(180, 180, 180);
+        }
+
+        .page {
+            flex: 1;
+            margin-top: 10px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            display: flex;
+            flex-flow: column nowrap;
+        }
+
+        .image {
+            flex: 1;
+            text-align: center;
+            width: 256px;
+            height: 250px;
+        }
+
+        .name {
+            flex: 0.2;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            border-bottom: 1px solid rgb(180, 180, 180);
+            border-top: 1px solid rgb(180, 180, 180);
+            text-align: center;
+            font-size: 20px;
+        }
+
+        .exp {
+            flex: 0.8;
+            margin-bottom: 5px;
+            text-align: left;
+            font-size: 20px;
+            height: 200px;
+        }
+
+        .history {
+            flex: 0.4;
+            border-top: 1px solid rgb(180, 180, 180);
+            font-size: 20px;
+            height: 100px;
+        }
+
+        img {
+            width: 90%;
+            height: 95%;
+        }
+
+        .news {
+            flex: 0.5;
+        }
+
+        .room {
+            flex: 1;
+        }
+
+        .friends {
+            flex: 0.1;
+        }
+
+        .title {
+            font-family: 'DungGeunMo';
+            color: rgb(57, 103, 189);
+            font-size: larger;
+            border-top: 1px solid rgb(180, 180, 180);
+        }
+
+        .music {
+            display: inline-block;
+            margin-top: 5px;
+            margin-bottom: 10px;
+
+        }
+
+        .musicname {
+            color: navy;
+            font-size: 19px;
+            margin-bottom: 3px;
+        }
+
+        .artist {
+            color: rgb(57, 103, 189);
+            margin-bottom: 8px;
+            font-size: 20px;
+        }
+
+        .miniroom {
+            width: 500px;
+            height: 200px;
+        }
+
+        .mybtns {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+        }
+
+        .index {
+            position: relative;
+            right: 35px;
+            bottom: 200px;
+            width: 100px;
+        }
+
+        .index :hover {
+            font-weight: bold;
+            text-decoration-line: none;
+            color: black;
+        }
+
+        .index .home {
+            border-left: 1px solid rgb(131, 234, 247);
+            background-color: rgb(131, 234, 247);
+            font-size: small;
+            width: 70px;
+            height: 30px;
+            border-radius: 0 10px 10px 0 / 0 10px 10px 0;
+            border-top: 1px solid gray;
+            border-right: 1px solid gray;
+            border-bottom: 1px solid gray;
+        }
+
+        .eunji {
+            border-left: 1px solid rgb(131, 234, 247);
+            background-color: rgb(131, 234, 247);
+            font-size: small;
+            width: 70px;
+            height: 30px;
+            border-radius: 0 10px 10px 0 / 0 10px 10px 0;
+            border-top: 1px solid gray;
+            border-right: 1px solid gray;
+            border-bottom: 1px solid gray;
+        }
+
+        .namgyu {
+
+            border-left: 1px solid white;
+            background-color: white;
+            font-size: small;
+            width: 70px;
+            height: 30px;
+            border-radius: 0 10px 10px 0 / 0 10px 10px 0;
+            border-top: 1px solid gray;
+            border-right: 1px solid gray;
+            border-bottom: 1px solid gray;
+        }
+
+        .jeongeun {
+
+            border-left: 1px solid rgb(131, 234, 247);
+            background-color: rgb(131, 234, 247);
+            font-size: small;
+            width: 70px;
+            height: 30px;
+            border-radius: 0 10px 10px 0 / 0 10px 10px 0;
+            border-top: 1px solid gray;
+            border-right: 1px solid gray;
+            border-bottom: 1px solid gray;
+        }
+
+        .sohee {
+
+            border-left: 1px solid rgb(131, 234, 247);
+            background-color: rgb(131, 234, 247);
+            font-size: small;
+            width: 70px;
+            height: 30px;
+            border-radius: 0 10px 10px 0 / 0 10px 10px 0;
+            border-top: 1px solid gray;
+            border-right: 1px solid gray;
+            border-bottom: 1px solid gray;
+        }
+
+        .introduce {
+            line-height: 18px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cover">
+        <div class="container">
+            <div class="profile">
+                <div class="image">
+                    <img src="https://th.bing.com/th/id/OIP.wq2iwfonbznzI49gLv_iiwHaEK?w=321&h=180&c=7&r=0&o=5&pid=1.7"
+                        alt="프로필 이미지">
+                </div>
+                <div class="name">이남규</div>
+                <div class="exp">
+                    <div>ENTP</div>
+                    <div>안녕하세요 만나서 반갑습니다.</div>
+                    <div>저는 대구 달서구에 거주하고 있는 이남규 입니다. </div>
+                    <div></div>
+                </div>
+                <div class="history">
+                    my music~♫<br>
+                    <div class="music">
+                        <div class="artist">MC몽</div>
+                        <div class="musicname"> - Bubble Love (With 서인영)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="news">
+                    <div class="title">남규를 소개합니댜</div>
+                    <ul class="introduce">
+                        <li>
+                            객관적으로 살펴본 자신의 장점
+
+                        </li>
+                        <div>
+                            1. 추진력이 좋아 생각나는건 바로바로 실행한다.
+                        </div>
+                        <div>
+                            2. 항상 늘 새로운 방법을 찾는다.
+                        </div>
+                        <div>
+                            3. 내 의견을 솔직하게 말한다.
+                        </div>
+                        <li>
+                            협업을 하는 과정에서의 자신의 스타일
+
+                        </li>
+                        <div>
+                            1. 생각나는 아이디어를 바로바로 말해 최대한 많은 아이디어를 제공한다.
+                        </div>
+                        <div>
+                            2. 의견을 항상 객관적으로 보려고 한다.
+                        </div>
+                        <div>
+                            3. 현재 나의 진행상황을 잘 공유하려 한다.
+                        </div>
+                    </ul>
+                </div>
+                <div class="room">
+                    <div class="title">방명록</div>
+                    <div class="chat-container" id="comment-list">
+                        <div class="Date">---------------------&lt;2023. 5. 17.&gt;---------------------</div>
+                        <div class="message sent" onmouseover="showOverlay(this)" onmouseout="hideOverlay(this)">
+                            <div class="sender"></div>
+                            <div class="content"></div>
+                            <span class="timestamp">오후 9:11</span>
+                            <div class="overlay" onclick="closeModal(this)" style="display: none;">
+                                <input type="text" class="input-password" data-comment="ㅂㅈㄷ" placeholder="비밀번호">
+                                <button class="delete-button" type="button" onclick="delete_comment(this)">삭제</button>
+                            </div>
+                        </div>
+                        <div class="message sent" onmouseover="showOverlay(this)" onmouseout="hideOverlay(this)">
+                            <div class="sender"></div>
+                            <div class="content"></div>
+                            <span class="timestamp">오후 9:12</span>
+                            <div class="overlay" onclick="closeModal(this)" style="display: none;">
+                                <input type="text" class="input-password" data-comment="ㅋㅌㅊ" placeholder="비밀번호">
+                                <button class="delete-button" type="button" onclick="delete_comment(this)">삭제</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-container">
+                    <input type="text" class="input-nickname" id="name" placeholder="닉네임">
+                    <input type="text" class="input-password" id="password" placeholder="비밀번호">
+                    <input type="text" class="input-message" id="comment" placeholder="메시지를 입력하세요">
+                    <button class="input-button" onclick="save_comment()">기록하기</button>
+                </div>
+                <!-- <div class="friends">
+                    <div class="title">what friends say</div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    <div class="index">
+        <button class="home" onclick="window.location.href = '../main.html'">홈</button>
+        <button class="eunji" onclick="window.location.href = '../templates/eunji.html'">은지</button>
+        <button class="namgyu" onclick="window.location.href = '../templates/namgyu.html'">남규</button>
+        <button class="jeongeun" onclick="window.location.href = '../templates/jeongeun.html'">정은</button>
+        <button class="sohee" onclick="window.location.href = '../templates/sohee.html'">소희</button>
+    </div>
+    <script>
+
+        function showOverlay(element) {
+            var overlay = element.querySelector('.overlay');
+            overlay.style.display = 'block';
+        }
+
+        function hideOverlay(element) {
+            var overlay = element.querySelector('.overlay');
+            overlay.style.display = 'none';
+        }
+
+
+    </script>
+</body>
+
+</html>
