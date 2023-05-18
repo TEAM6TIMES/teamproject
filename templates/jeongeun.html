@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>개인 페이지</title>
+    <link rel="stylesheet" type="text/css" href="../static/styles.css">
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery 라이브러리 추가 -->
+
+    <script>
+        $(document).ready(function () {
+            set_temp();
+            show_comment();
+        });
+
+        function set_temp() {
+            fetch("http://spartacodingclub.shop/sparta_api/weather/seoul")
+                .then((res) => res.json())
+                .then((data) => {
+                    console.log(data);
+                });
+        }
+
+        function save_comment() {
+            let name = $('#name').val();
+            let comment = $('#comment').val();
+            let password = $('#password').val();
+            if (name == "") {
+                alert("닉네임을 입력하세요.");
+            } else {
+                var currentDate = new Date().toLocaleDateString('ko-KR');
+                var currentTime = new Date().toLocaleTimeString('ko-KR', {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    hour12: true,
+                    hourCycle: 'h23'
+                });
+
+                let formData = new FormData();
+                formData.append("name_give", name);
+                formData.append("comment_give", comment);
+                formData.append("password_give", password);
+                formData.append("currentDate_give", currentDate);
+                formData.append("currentTime_give", currentTime);
+
+                fetch('/guestbook', { method: "POST", body: formData }).then((res) => res.json()).then((data) => {
+                    alert(data["msg"]);
+                    window.location.reload();
+                });
+            }
+        }
+
+
+        function delete_comment(a) {
+            let comment = a
+
+            console.log(check_password);
+
+            $.ajax({
+                type: 'DELETE',
+                url: '/guestbook',
+                data: {
+                    comment_give: comment
+                },
+                success: function (response) {
+                    alert(response['msg']);
+                    window.location.reload();
+                }
+            });
+        }
+
+
+
+
+
+
+        function show_comment() {
+            fetch('/guestbook')
+                .then((res) => res.json())
+                .then((data) => {
+                    let rows = data['result'];
+                    $('#comment-list').empty();
+                    let currentDate2 = '';
+                    let currentDate1 = null; // 초기값 설정
+
+                    rows.forEach((a) => {
+                        let name = a['name'];
+                        let comment = a['comment'];
+                        let currentDate1 = a['currentDate'];
+                        let currentTime = a['currentTime'];
+                        let temp_html = '';
+
+                        if (currentDate1 && currentDate1 !== currentDate2) {
+                            temp_html += `<div class="Date">---------------------<${currentDate1}>---------------------</div>`;
+                        }
+
+                        temp_html += `<div class="message sent" onmouseover="showOverlay(this)" onmouseout="hideOverlay(this)">
+                                        <div class="sender">${name}</div>
+                                        <div class="content">${comment}</div>
+                                        <span class="timestamp">${currentTime}</span>
+                                        <div class="overlay" onclick="closeModal(this)">
+                                            <input type="text" class="input-password" id="check_password" placeholder="비밀번호">
+                                            <button class="delete-button" type="button" onclick="delete_comment('${comment}')">삭제</button>
+                                        </div>
+                                    </div>`;
+
+                        currentDate2 = currentDate1;
+                        $('#comment-list').append(temp_html);
+                        // 스크롤을 최신 메시지로 이동
+                        let chatContainer = document.getElementById('comment-list');
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    });
+                });
+        }
+        function yourAge() {
+            var currentYear = new Date().getFullYear();
+            var birthYear = 1993
+            var age = currentYear - birthYear
+            return age
+        }
+        $(document).ready(function () {
+            var ageElement = document.getElementById('yourAge');
+            ageElement.textContent = yourAge().toString();
+        });
+    </script>
+
+</head>
+
+<body>
+    <div class="cover">
+        <div class="container">
+            <div class="profile">
+                <div class="image">
+                    <img src="https://th.bing.com/th/id/OIP.wq2iwfonbznzI49gLv_iiwHaEK?w=321&h=180&c=7&r=0&o=5&pid=1.7"
+                        alt="프로필 이미지">
+                </div>
+                <div class="name">한정은</div>
+                <div class="exp">
+                    <div>INTP</div>
+                    <div id="yourAge"></div>
+                    <div>대구 달서구</div>
+                    <div>아무것도 안하고 싶다, 이미 아무것도 안하고 있지만 격렬하게 아무것도 안하고 싶다.</div>
+                </div>
+                <div class="history">
+                    my music~♫<br>
+                    <div class="music">
+                        <div class="artist">적재</div>
+                        <div class="musicname"> - 잘 지내</div>
+                    </div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="news">
+                    <div class="title">나의 협업스타일</div>
+                    <ul>
+                        <li>
+                            제 협업 스타일은 팀원들과 함께 협력하며 성공을 이끌어 가는 것을 중요하게 생각합니다. 
+                        </li>
+                        <li>
+                            문제를 다양한 각도에서 살피고 개선점을 찾는 데 능숙하며, 
+                        </li>
+                        <li>
+                            협업 과정에서 팀원들에게 중요한 관점과 정보를 제공할 수 있습니다.
+                        </li>
+                    </ul>
+                </div>
+                <div class="room">
+                    <div class="title">방명록</div>
+                    <div class="chat-container" id="comment-list">
+                        <div class="Date">---------------------&lt;2023. 5. 17.&gt;---------------------</div>
+                        <div class="message sent" onmouseover="showOverlay(this)" onmouseout="hideOverlay(this)">
+                            <div class="sender">ㅂㅈㄷ</div>
+                            <div class="content">ㅂㅈㄷ</div>
+                            <span class="timestamp">오후 9:11</span>
+                            <div class="overlay" onclick="closeModal(this)" style="display: none;">
+                                <input type="text" class="input-password" data-comment="ㅂㅈㄷ" placeholder="비밀번호">
+                                <button class="delete-button" type="button" onclick="delete_comment(this)">삭제</button>
+                            </div>
+                        </div>
+                        <div class="message sent" onmouseover="showOverlay(this)" onmouseout="hideOverlay(this)">
+                            <div class="sender">ㅋㅌㅊ</div>
+                            <div class="content">ㅋㅌㅊ</div>
+                            <span class="timestamp">오후 9:12</span>
+                            <div class="overlay" onclick="closeModal(this)" style="display: none;">
+                                <input type="text" class="input-password" data-comment="ㅋㅌㅊ" placeholder="비밀번호">
+                                <button class="delete-button" type="button" onclick="delete_comment(this)">삭제</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-container">
+                    <input type="text" class="input-nickname" id="name" placeholder="닉네임">
+                    <input type="text" class="input-password" id="password" placeholder="비밀번호">
+                    <input type="text" class="input-message" id="comment" placeholder="메시지를 입력하세요">
+                    <button class="input-button" onclick="save_comment()">기록하기</button>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="index">
+        <button class="home" onclick="window.location.href = '../main.html'">홈</button>
+        <button class="eunji" onclick="window.location.href = '../templates/eunji.html'">은지</button>
+        <button class="namgyu" onclick="window.location.href = '../templates/namgyu.html'">남규</button>
+        <button class="jeongeun" onclick="window.location.href = '../templates/jeongeun.html'">정은</button>
+        <button class="sohee" onclick="window.location.href = '../templates/sohee.html'">소희</button>
+    </div>
+    <script>
+       
+        function showOverlay(element) {
+            var overlay = element.querySelector('.overlay');
+            overlay.style.display = 'block';
+        }
+
+        function hideOverlay(element) {
+            var overlay = element.querySelector('.overlay');
+            overlay.style.display = 'none';
+        }
+
+
+    </script>
+</body>
+
+</html>
