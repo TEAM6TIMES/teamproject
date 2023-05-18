@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+<style>
+    @font-face {
+        font-family: 'DungGeunMo';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    body {
+        background-image: linear-gradient(0deg,
+                rgba(0, 0, 0, 0.5),
+                rgba(0, 0, 0, 0.5)),
+            url("https://mir-s3-cdn-cf.behance.net/project_modules/fs/01073865290819.5d61d475f0072.jpg");
+        background-size: values cover;
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        flex-flow: row;
+        justify-content: center;
+        align-items: center;
+        font-family: 'DungGeunMo';
+    }
+
+    .cover {
+        background-color: rgba(131, 234, 247, 0.902);
+        padding: 20px 20px;
+        margin-top: 10%;
+        margin-bottom: 10%;
+        border-radius: 25px;
+        border: 2.5px solid #F1F1FF;
+        box-shadow: 5px 5px 5px 1px gray;
+    }
+
+    .container {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: center;
+        width: 1000px;
+        height: 650px;
+        border: 2px dashed #F1F1FF;
+        border-radius: 16px;
+    }
+
+    .profile {
+        flex: 0.4;
+        margin-top: 10px;
+        margin-left: 10px;
+        margin-bottom: 10px;
+        padding: 15px;
+        background-color: white;
+        border-radius: 10px;
+        display: flex;
+        flex-flow: column nowrap;
+        border-right: 1px dashed rgb(180, 180, 180);
+        box-shadow: 5px 5px 5px 1px gray;
+    }
+
+    .page {
+        flex: 1;
+        margin-top: 10px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        display: flex;
+        flex-flow: column nowrap;
+        box-shadow: 5px 5px 5px 1px gray;
+    }
+
+    .image {
+        flex: 1;
+        text-align: center;
+    }
+
+    .name {
+        flex: 0.2;
+        margin-top: 10px;
+        border-bottom: 1px solid rgb(180, 180, 180);
+        border-top: 1px solid rgb(180, 180, 180);
+        text-align: center;
+        font-size: 20px;
+        padding-top: 12px;
+    }
+
+    .exp {
+        flex: 0.8;
+        margin-bottom: 5px;
+        text-align: left;
+        font-size: 18px;
+    }
+
+    .history {
+        flex: 0.4;
+        border-top: 1px solid rgb(180, 180, 180);
+        font-size: 23px;
+    }
+
+    img {
+        width: 220px;
+        height: 220x;
+        border-radius: 10px;
+    }
+
+    .news {
+        flex: 0.5;
+    }
+
+    .room {
+        flex: 1;
+    }
+
+    .friends {
+        flex: 0.1;
+    }
+
+    @font-face {
+        font-family: 'DungGeunMo';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    .title {
+        font-family: 'DungGeunMo';
+        color: rgb(57, 103, 189);
+        font-size: larger;
+        border-top: 1px solid rgb(180, 180, 180);
+    }
+
+    .music {
+        display: inline-block;
+        margin-top: 5px;
+        margin-bottom: 10px;
+    }
+
+    .musicname {
+        color: navy;
+        font-size: 26px;
+        margin-bottom: 3px;
+    }
+
+    .artist {
+        color: rgb(57, 103, 189);
+        margin-bottom: 8px;
+        font-size: 20px;
+    }
+
+    .miniroom {
+        width: 600px;
+        height: 290px;
+    }
+
+    .index {
+        position: relative;
+        right: 35px;
+        bottom: 200px;
+        width: 100px;
+    }
+
+    .index .home {
+        background-color: white;
+        font-size: small;
+        width: 70px;
+        height: 30px;
+        border-radius: 0 10px 10px 0 / 0 10px 10px 0;
+        border-top: 1px solid gray;
+        border-right: 1px solid gray;
+        border-bottom: 1px solid gray;
+        border-left: 1px solid white;
+    }
+
+    .eunji {
+        border-left: 1px solid rgb(131, 234, 247);
+        background-color: rgb(131, 234, 247);
+        font-size: small;
+        width: 70px;
+        height: 30px;
+        border-radius: 0 10px 10px 0 / 0 10px 10px 0;
+        border-top: 1px solid gray;
+        border-right: 1px solid gray;
+        border-bottom: 1px solid gray;
+    }
+
+    .namgu {
+
+        border-left: 1px solid rgb(131, 234, 247);
+        background-color: rgb(131, 234, 247);
+        font-size: small;
+        width: 70px;
+        height: 30px;
+        border-radius: 0 10px 10px 0 / 0 10px 10px 0;
+        border-top: 1px solid gray;
+        border-right: 1px solid gray;
+        border-bottom: 1px solid gray;
+    }
+
+    .jeongeun {
+
+        border-left: 1px solid rgb(131, 234, 247);
+        background-color: rgb(131, 234, 247);
+        font-size: small;
+        width: 70px;
+        height: 30px;
+        border-radius: 0 10px 10px 0 / 0 10px 10px 0;
+        border-top: 1px solid gray;
+        border-right: 1px solid gray;
+        border-bottom: 1px solid gray;
+    }
+
+    .sohee {
+
+        border-left: 1px solid rgb(131, 234, 247);
+        background-color: rgb(131, 234, 247);
+        font-size: small;
+        width: 70px;
+        height: 30px;
+        border-radius: 0 10px 10px 0 / 0 10px 10px 0;
+        border-top: 1px solid gray;
+        border-right: 1px solid gray;
+        border-bottom: 1px solid gray;
+    }
+</style>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> 하이루! 우린 6조</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<body>
+    <div class="cover">
+        <div class="container">
+            <div class="profile">
+                <div class="image">
+                    <img src="../다운로드.jpeg" alt="프로필 이미지">
+                </div>
+                <div class="name">육켄두잇</div>
+                <div class="exp">
+                    <ul>
+                        <li><a href="https://yogidogi11.tistory.com/">은지의 블로그</a></li>
+                        <li><a href="https://yogidogi11.tistory.com/">남규의 블로그</a></li>
+                        <li><a href="https://yogidogi11.tistory.com/">정은의 블로그</a></li>
+                        <li><a href="https://yogidogi11.tistory.com/">소희의 블로그</a></li>
+                    </ul>
+                </div>
+                <div class="history">
+                    NOW PLAYING<br>
+                    <div class="music">
+                        <div class="musicname">Y</div>
+                        <div class="artist"> - 프리스타일</div>
+                    </div>
+                </div>
+            </div>
+            <div class="page">
+                <div class="news">
+                    <div class="title">6조를 소개합니댜</div>
+                    <ul style="font-size: 16px">
+                        <li>우리 팀만의 특징과 추구하는 궁극적인 목표: <br>
+                            개발에 대한 뜨거운 열정으로 똘똘뭉친 네사람! 저희에게 가장 중요한 것은 아무래도 협업과 소통 아닐까요?<br></li>
+                        <li>우리 팀의 약속<br>
+                            1. 팀원들의 의견을 긍정적으로 받아들이기<br>
+                            2. 솔직하게 피드백해주되 상처받지 않는 화법으로 말하기<br>
+                            3. 시간약속엄수<br>
+                            4. 혼자서 끙끙대지 말고 어려운 부분은 주저 없이 이야기하기!</li>
+                    </ul>
+                </div>
+                <div class="room">
+                    <div class="title">미니룸</div>
+                    <div>
+                        <img class="miniroom" src="../Group 7.png" alt="미니룸 단체사진">
+                    </div>
+                </div>
+                <div class="friends">
+                    <div class="title">What to do</div>
+                    <li>
+                        GIT 공부하기
+                    </li>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    <div class="index">
+        <button class="home">홈</button>
+        <button class="eunji">은지</button>
+        <button class="namgu">남규</button>
+        <button class="jeongeun">정은</button>
+        <button class="sohee">소희</button>
+    </div>
+</body>
+
+</html>
